@@ -20,12 +20,19 @@ LABEL docker.version=1.0
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
-RUN apt-get update && apt-get install -y --no-install-recommends git && apt-get install -y r-base
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends git && \
+    apt-get install -y r-base default-jre default-jdk && \
+    R CMD javareconf  && \
+    R -e 'install.packages(c("RGCCA", "ggplot2", "optparse", "scales", "xlsx"), repos = "http://cran.us.r-project.org")'
 RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
 	cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
 	cp -r data/ R/ / && \
-	apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/*  && \
+	apt-get purge -y git && \
+	apt-get autoremove --purge -y && \
+	apt-get clean && \
+	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/*  && \
 	cd / && rm -rf $TOOL_NAME
 
 #ADD runTest1.sh /usr/local/bin/functional_tests.sh
