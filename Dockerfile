@@ -11,7 +11,7 @@ FROM rocker/tidyverse:3.4.1
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION release/2.0
-ENV TOOL_NAME rgcca_galaxy
+ENV TOOL_NAME rgcca_Rpackage
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
@@ -24,7 +24,7 @@ RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends git default-jre default-jdk && \
     apt-get install -y r-base r-cran-ggplot2 r-cran-scales r-cran-optparse && \
     R CMD javareconf && \
-    R -e 'install.packages(c("RGCCA", "rJava", "xlsxjars", "xlsx"))' && \
+    R -e 'install.packages(c("RGCCA", "rJava", "xlsxjars", "xlsx"))'
     git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
 	cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
@@ -35,7 +35,9 @@ RUN apt-get update -qq && \
 	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/*  && \
 	cd / && rm -rf $TOOL_NAME
 
-#ADD runTest1.sh /usr/local/bin/functional_tests.sh
-#RUN chmod +x /usr/local/bin/functional_tests.sh
+COPY functional_tests.sh /functional_tests.sh
+COPY data/ /data/
+RUN chmod +x /functional_tests.sh && \
+    ./functional_tests.sh
 
 ENTRYPOINT ["Rscript", "R/launcher.R"]
