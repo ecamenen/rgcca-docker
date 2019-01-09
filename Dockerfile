@@ -5,7 +5,6 @@
 # with all default settings predefined. Produce two figures to help clinicians to identify biomarkers:
 # samples and variables projected on the two first component of the multi-block analysis.
 
-
 FROM rocker/tidyverse:3.4.1
 
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
@@ -21,19 +20,27 @@ LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
 RUN apt-get update -qq && \
+    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends git default-jre default-jdk && \
     apt-get install -y r-base r-cran-ggplot2 r-cran-scales r-cran-optparse && \
     R CMD javareconf && \
-    R -e 'install.packages(c("RGCCA", "rJava", "xlsxjars", "xlsx"))'
+    R -e 'install.packages(c("RGCCA", "rJava", "xlsxjars", "xlsx"))' && \
     git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
 	cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
 	cp -r data/ R/ / && \
-	apt-get purge -y git g++ && \
+	apt-get purge -y git && \
 	apt-get autoremove --purge -y && \
 	apt-get clean && \
 	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/*  && \
-	cd / && rm -rf $TOOL_NAME
+	cd /
+
+RUN R -e 'install.packages(c("optparse", "pander", "shinyjs"))' && \
+    R CMD INSTALL $TOOL_NAME && \
+    apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science && \
+    R CMD check $TOOL_NAME && \
+	apt-get purge -y g++ && \
+	rm -rf $TOOL_NAMEmake clean
 
 COPY functional_tests.sh /functional_tests.sh
 COPY data/ /data/
