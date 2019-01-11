@@ -1,2 +1,20 @@
 
 \.idea/
+
+ave\.pdf
+
+resultRuns\.log
+
+Rplots\.pdf
+
+R/
+
+data/agriculture\.tsv
+
+data/connection\.tsv
+
+data/industry\.tsv
+
+data/politic\.tsv
+
+data/response\.tsv

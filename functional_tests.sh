@@ -155,7 +155,7 @@ testsBlocksBad(){
 
 testsSep(){
     setUp
-    TESTS=( '-s 1')
+    TESTS=( '--separator 1')
     test
 }
 
@@ -164,7 +164,7 @@ testsSepBad(){
     EXIT=1
     WARN="--separator must be comprise between 1 and 2 (1: Tabulation, 2: Semicolon, 3: Comma) [by default: 2]."
     WARNS=( "${WARN}" "${WARN}" "agriculture block file has an only-column. Check the separator [by default: tabulation]." )
-    TESTS=( '-s 0' '-s 4' '-s 2' )
+    TESTS=( '--separator 0' '--separator 4' '--separator 2' )
     test 1
 }
 
@@ -244,6 +244,88 @@ testFileCharacter(){
     test
 }
 
+export LANG=en_GB.utf8
+
+testTauBad(){
+    setUp
+    EXIT=1
+    WARN="--tau must be comprise between 0 and 1 or must corresponds to the character 'optimal' for automatic setting."
+    TESTS=( '-t 1.1' '-t 2' '-t lkglkmgtk' )
+    test
+}
+
+testTau(){
+    setUp
+    j=0
+    for i in `seq 0 0.2 1 `; do
+        TESTS[${j}]='-t '${i}
+        let j=${j}+1
+    done
+    TESTS[6]="-t optimal"
+    test
+}
+
+testOtherRGCCAparam(){
+    setUp
+    TESTS=( '--scale' '--superblock' '--bias' '--nmark 1' '--nmark 100')
+    test
+}
+
+testsInit(){
+    setUp
+    for i in `seq 0 1`; do
+        let j=${i}+1
+        TESTS[i]='--init '${j}
+    done
+    test
+}
+
+testsInitBad(){
+    setUp
+    EXIT=1
+    WARN='--init must be comprise between 1 and 2 (1: Singular Value Decompostion , 2: random) [by default: SVD].'
+    TESTS=( '--init 0' '--init 3' )
+    test
+}
+
+testNcomp(){
+    setUp
+    TESTS=( '--ncomp 2' '--compx 1' '--compy 2')
+    test
+}
+
+testNcompBad(){
+    setUp
+    EXIT=1
+    WARN='--ncomp must be comprise between 2 and 2 (the minimum number of variables among the whole blocks).'
+    TESTS=( '--ncomp 0' '--ncomp 1' '--ncomp 3' )
+    test
+}
+
+testNcompXYBad(){
+    setUp
+    EXIT=1
+    WARN='must be comprise between 2 and 2 (the number of component selected).'
+    TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' )
+    test
+}
+
+testBlock(){
+    setUp
+    for i in `seq 0 3`; do
+        TESTS[i]='--block '${i}
+    done
+    test
+}
+
+testBlockBad(){
+    setUp
+    EXIT=1
+    WARN=( '--block must be lower than 4 (the maximum number of blocks).' )
+    TESTS=( '--block 100' )
+    test
+}
+
 ########### MAIN ###########
 
 START_TIME=$(date -u -d $(date +"%H:%M:%S") +"%s")
@@ -263,9 +345,20 @@ testExcel
 testFileCharacter
 testsResponseBad
 testsBlocksBad
+testTau
+testTauBad
+testOtherRGCCAparam
+testsInit
+testsInitBad
+testNcomp
+testNcompBad
+testNcompXYBad
+testBlock
+testBlockBad
 
 rm -r temp/ temp2/
 printf "\n$NBTEST tests, $NBFAIL failed.$ERRORS\n"
 getElapsedTime ${START_TIME}
+[[ -z $(cat warnings.log) ]] && rm warnings.log
 [[ -z ${ERRORS} ]] || exit 1
 exit 0
