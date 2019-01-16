@@ -1,9 +1,9 @@
-# ICM - Institut du Cerveau et de la Moelle epiniere (Paris, FRANCE),
-# Institut Francais de Bioinformatique (IFB), Centre national de la recherche scientifique (CNRS)
-#
-# Abstract: A user-friendly multi-blocks analysis (Regularized Generalized Canonical Correlation Analysis, RGCCA)
-# with all default settings predefined. Produce two figures to help clinicians to identify biomarkers:
-# samples and variables projected on the two first component of the multi-block analysis.
+# Author: Etienne CAMENEN
+# Date: 2018
+# Contact: arthur.tenenhaus@l2s.centralesupelec.fr
+# Key-words: omics, RGCCA, multi-block
+# EDAM operation: analysis, correlation, visualisation
+# Short description: performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space.
 
 FROM rocker/tidyverse:3.4.1
 

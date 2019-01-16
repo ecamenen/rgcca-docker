@@ -1,15 +1,14 @@
 #!/bin/bash
-# multiOmics Toolbox
-# Version: 1.0
 # Author: Etienne CAMENEN
+# Date: 2018
+# Contact: arthur.tenenhaus@l2s.centralesupelec.fr
 # Key-words: omics, RGCCA, multi-block
 # EDAM operation: analysis, correlation, visualisation
-# Contact: arthur.tenenhaus@l2s.centralesupelec.fr
 # Short description: performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space.
 
 #Settings files
 FILE_ERR="false"
-OUTFILES=( 'samples_space.pdf' 'corcircle.pdf' 'fingerprint.pdf' )
+OUTFILES=( 'samples_space.pdf' 'corcircle.pdf' 'fingerprint.pdf' 'ave.pdf')
 
 #Initialization
 declare -x INFILE FUNC OPAR WARN
@@ -210,7 +209,7 @@ testsConnection(){
 testsConnectionBad(){
     setUp
     EXIT=1
-    WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The number of rows/columns of the connection matrix file must be equals to 4 (the number of files in the dataset + 1)." )
+    WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The number of rows/columns of the connection matrix file must be equals to 4 (the number of blocks in the dataset, +1 with a superblock by default)." )
     cat data/connection.tsv | tr '[1]' '[2]' > temp2/connection.tsv
     cat data/connection.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
     cat data/connection.tsv | head -n -1 > temp2/connection3.tsv
@@ -249,7 +248,7 @@ export LANG=en_GB.utf8
 testTauBad(){
     setUp
     EXIT=1
-    WARN="--tau must be comprise between 0 and 1 or must corresponds to the character 'optimal' for automatic setting."
+    WARN="--tau must be comprise between 0 and 1 or must correspond to the character 'optimal' for automatic setting."
     TESTS=( '-t 1.1' '-t 2' '-t lkglkmgtk' )
     test
 }
