@@ -18,7 +18,7 @@ echo '' > resultRuns.log
 echo '' > warnings.log
 
 setUp(){
-    INFILE="data/agriculture.tsv,data/industry.tsv,data/politic.tsv"
+    INFILE="inst/extdata/agriculture.tsv,inst/extdata/industry.tsv,inst/extdata/politic.tsv"
     EXIT=0
     PARAMETER=0
     WARN="fgHj4yh"
@@ -69,7 +69,7 @@ testError(){
     fi
 
     [ ${BOOLEAN_ERR} == "true" ] && {
-	    ERRORS=${ERRORS}"\n***************\n##Test \"${TESTS[$2]}\" in $FUNC: \n$MSG"
+	    ERRORS=${ERRORS}"\n##Test \"${TESTS[$2]}\" in $FUNC: \n$MSG"
 	    return 1
     }
     return 0
@@ -142,12 +142,10 @@ testsDefault(){
     test
 }
 
-testsBlocksBad(){
+testsBlocksNrow(){
     cat data/agriculture.tsv | head -n -1 > temp/agriculture2.tsv
     setUp
-    INFILE="temp/agriculture2.tsv,data/industry.tsv,data/politic.tsv"
-    EXIT=1
-    WARN="The number of rows is different among the blocks."
+    INFILE="temp/agriculture2.tsv,inst/extdata/industry.tsv,inst/extdata/politic.tsv"
     TESTS=( '' )
     test
 }
@@ -171,7 +169,7 @@ testsScheme(){
     setUp
     for i in `seq 0 3`; do
         let j=${i}+1
-        TESTS[i]='-g '${j}
+        TESTS[i]='--scheme '${j}
     done
     test
 }
@@ -180,29 +178,29 @@ testsSchemeBad(){
     setUp
     EXIT=1
     WARN="--scheme must be comprise between 1 and 4 [by default: 2]."
-    TESTS=( '-g 0' '-g 5' )
+    TESTS=( '--scheme 0' '--scheme 5' )
     test
 }
 
 testsResponse(){
     setUp
-    TESTS=( '-r data/response.tsv' '-r data/response2.tsv' '-r data/response3.tsv' )
+    TESTS=( '--group inst/extdata/response.tsv' '--group inst/extdata/response2.tsv' '--group inst/extdata/response3.tsv' )
     test
 }
 
 testsResponseBad(){
-    cat data/response.tsv | head -n -1 > temp2/response.tsv
-    paste data/agriculture.tsv data/response.tsv > temp2/response2.tsv
+    cat inst/extdata/response.tsv | head -n -1 > temp2/response.tsv
+    paste inst/extdata/agriculture.tsv inst/extdata/response.tsv > temp2/response2.tsv
     setUp
     EXITS=(1 1 1 0)
     WARNS=( "The number of rows of the response file (46) is different from those of the blocks (47). Possible mistake: header parameter is disabled, check if the file doesn't have one." "test.tsv file does not exist" "Please, select a response file with either qualitative data only or quantitative data only. The header must be disabled for quantitative data and activated for disjunctive table." "There is multiple columns in the response file. By default, only the first one is taken in account.")
-    TESTS=( '-r temp2/response.tsv' '-r test.tsv' "-r temp2/response2.tsv" "-r data/agriculture.tsv")
+    TESTS=( '--group temp2/response.tsv' '--group test.tsv' "--group temp2/response2.tsv" "--group inst/extdata/agriculture.tsv")
     test 2
 }
 
 testsConnection(){
     setUp
-    TESTS=( '-c data/connection.tsv'  '-c data/connection2.tsv')
+    TESTS=( '-c inst/extdata/connection.tsv'  '-c inst/extdata/connection2.tsv')
     test
 }
 
@@ -210,10 +208,10 @@ testsConnectionBad(){
     setUp
     EXIT=1
     WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The number of rows/columns of the connection matrix file must be equals to 4 (the number of blocks in the dataset, +1 with a superblock by default)." )
-    cat data/connection.tsv | tr '[1]' '[2]' > temp2/connection.tsv
-    cat data/connection.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
-    cat data/connection.tsv | head -n -1 > temp2/connection3.tsv
-    cat data/connection.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
+    cat inst/extdata/connection.tsv | tr '[1]' '[2]' > temp2/connection.tsv
+    cat inst/extdata/connection.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
+    cat inst/extdata/connection.tsv | head -n -1 > temp2/connection3.tsv
+    cat inst/extdata/connection.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
     TESTS=( '-c temp2/connection.tsv' '-c temp2/connection2.tsv' '-c temp2/connection3.tsv' '-c temp2/connection4.tsv' )
     test 1
 }
@@ -228,13 +226,13 @@ testHeader(){
 
 testExcel(){
     setUp
-    INFILE="data/blocks.xlsx"
+    INFILE="inst/extdata/blocks.xlsx"
     TESTS=( '' )
     test
 }
 
 testFileCharacter(){
-    paste data/agriculture.tsv data/response.tsv > temp/dummyFile.tsv
+    paste inst/extdata/agriculture.tsv inst/extdata/response.tsv > temp/dummyFile.tsv
     setUp
     EXIT=1
     WARN="dummyFile file contains qualitative data. Please, transform them in a disjunctive table."
@@ -249,7 +247,7 @@ testTauBad(){
     setUp
     EXIT=1
     WARN="--tau must be comprise between 0 and 1 or must correspond to the character 'optimal' for automatic setting."
-    TESTS=( '-t 1.1' '-t 2' '-t lkglkmgtk' )
+    TESTS=( '--tau 1.1' '--tau 2' '--tau lkglkmgtk' )
     test
 }
 
@@ -257,10 +255,11 @@ testTau(){
     setUp
     j=0
     for i in `seq 0 0.2 1 `; do
-        TESTS[${j}]='-t '${i}
+        TESTS[${j}]='--tau '${i}
         let j=${j}+1
     done
-    TESTS[6]="-t optimal"
+    TESTS[6]="--tau optimal"
+    TESTS[7]="--tau 0,1,0,0.75"
     test
 }
 
@@ -289,7 +288,7 @@ testsInitBad(){
 
 testNcomp(){
     setUp
-    TESTS=( '--ncomp 2' '--compx 1' '--compy 2')
+    TESTS=( '--ncomp 2' '--ncomp 2,2,2,2' '--compx 1' '--compy 2')
     test
 }
 
@@ -297,7 +296,7 @@ testNcompBad(){
     setUp
     EXIT=1
     WARN='--ncomp must be comprise between 2 and 2 (the minimum number of variables among the whole blocks).'
-    TESTS=( '--ncomp 0' '--ncomp 1' '--ncomp 3' )
+    TESTS=( '--ncomp 0' '--ncomp 1' '--ncomp 3' '--ncomp 3,2,2,2')
     test
 }
 
@@ -338,20 +337,20 @@ testsScheme
 testsSchemeBad
 testsResponse
 testsConnection
-testsConnectionBad
-testHeader
+#testsConnectionBad
+#testHeader
 testExcel
 testFileCharacter
-testsResponseBad
-testsBlocksBad
-testTau
-testTauBad
-testOtherRGCCAparam
+#testsResponseBad
+#testsBlocksNrow
+#testTau
+#testTauBad
+#testOtherRGCCAparam
 testsInit
 testsInitBad
-testNcomp
-testNcompBad
-testNcompXYBad
+#testNcomp
+#testNcompBad
+#testNcompXYBad
 testBlock
 testBlockBad
 
