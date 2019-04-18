@@ -18,7 +18,7 @@ echo '' > resultRuns.log
 echo '' > warnings.log
 
 setUp(){
-    INFILE="inst/extdata/agriculture.tsv,inst/extdata/industry.tsv,inst/extdata/politic.tsv"
+    INFILE="data/agriculture.tsv,data/industry.tsv,data/politic.tsv"
     EXIT=0
     PARAMETER=0
     WARN="fgHj4yh"
@@ -145,7 +145,7 @@ testsDefault(){
 testsBlocksNrow(){
     cat data/agriculture.tsv | head -n -1 > temp/agriculture2.tsv
     setUp
-    INFILE="temp/agriculture2.tsv,inst/extdata/industry.tsv,inst/extdata/politic.tsv"
+    INFILE="temp/agriculture2.tsv,data/industry.tsv,data/politic.tsv"
     TESTS=( '' )
     test
 }
@@ -184,23 +184,23 @@ testsSchemeBad(){
 
 testsResponse(){
     setUp
-    TESTS=( '--group inst/extdata/response.tsv' '--group inst/extdata/response2.tsv' '--group inst/extdata/response3.tsv' )
+    TESTS=( '--group data/response.tsv' '--group data/response2.tsv' '--group data/response3.tsv' )
     test
 }
 
 testsResponseBad(){
-    cat inst/extdata/response.tsv | head -n -1 > temp2/response.tsv
-    paste inst/extdata/agriculture.tsv inst/extdata/response.tsv > temp2/response2.tsv
+    cat data/response.tsv | head -n -1 > temp2/response.tsv
+    paste data/agriculture.tsv data/response.tsv > temp2/response2.tsv
     setUp
     EXITS=(1 1 1 0)
     WARNS=( "The number of rows of the response file (46) is different from those of the blocks (47). Possible mistake: header parameter is disabled, check if the file doesn't have one." "test.tsv file does not exist" "Please, select a response file with either qualitative data only or quantitative data only. The header must be disabled for quantitative data and activated for disjunctive table." "There is multiple columns in the response file. By default, only the first one is taken in account.")
-    TESTS=( '--group temp2/response.tsv' '--group test.tsv' "--group temp2/response2.tsv" "--group inst/extdata/agriculture.tsv")
+    TESTS=( '--group temp2/response.tsv' '--group test.tsv' "--group temp2/response2.tsv" "--group data/agriculture.tsv")
     test 2
 }
 
 testsConnection(){
     setUp
-    TESTS=( '-c inst/extdata/connection.tsv'  '-c inst/extdata/connection2.tsv')
+    TESTS=( '-c data/connection.tsv'  '-c data/connection2.tsv')
     test
 }
 
@@ -208,10 +208,10 @@ testsConnectionBad(){
     setUp
     EXIT=1
     WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The number of rows/columns of the connection matrix file must be equals to 4 (the number of blocks in the dataset, +1 with a superblock by default)." )
-    cat inst/extdata/connection.tsv | tr '[1]' '[2]' > temp2/connection.tsv
-    cat inst/extdata/connection.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
-    cat inst/extdata/connection.tsv | head -n -1 > temp2/connection3.tsv
-    cat inst/extdata/connection.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
+    cat data/connection.tsv | tr '[1]' '[2]' > temp2/connection.tsv
+    cat data/connection.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
+    cat data/connection.tsv | head -n -1 > temp2/connection3.tsv
+    cat data/connection.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
     TESTS=( '-c temp2/connection.tsv' '-c temp2/connection2.tsv' '-c temp2/connection3.tsv' '-c temp2/connection4.tsv' )
     test 1
 }
@@ -226,13 +226,13 @@ testHeader(){
 
 testExcel(){
     setUp
-    INFILE="inst/extdata/blocks.xlsx"
+    INFILE="data/blocks.xlsx"
     TESTS=( '' )
     test
 }
 
 testFileCharacter(){
-    paste inst/extdata/agriculture.tsv inst/extdata/response.tsv > temp/dummyFile.tsv
+    paste data/agriculture.tsv data/response.tsv > temp/dummyFile.tsv
     setUp
     EXIT=1
     WARN="dummyFile file contains qualitative data. Please, transform them in a disjunctive table."
@@ -335,7 +335,7 @@ testsSep
 testsSepBad
 testsScheme
 testsSchemeBad
-testsResponse
+#testsResponse
 testsConnection
 #testsConnectionBad
 #testHeader

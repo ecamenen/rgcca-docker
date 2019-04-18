@@ -28,18 +28,17 @@ RUN apt-get update -qq && \
     git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
 	cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION  && \
-	cp -r inst/extdata/ R/ / && \
 	apt-get purge -y git && \
 	apt-get autoremove --purge -y && \
 	apt-get clean && \
 	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/*  && \
-	cd /
-
-RUN R -e 'install.packages(c("optparse", "pander", "shinyjs"))' && \
+	cd / && \
+	R -e 'install.packages(c("optparse", "pander", "shinyjs"))' && \
     R CMD INSTALL $TOOL_NAME && \
     apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science && \
     R CMD check $TOOL_NAME && \
 	apt-get purge -y g++ && \
+	cd $TOOL_NAME && mv inst/extdata/ inst/data && cp -r inst/data/ R/ /  && \
 	rm -rf $TOOL_NAMEmake clean
 
 COPY functional_tests.sh /functional_tests.sh
