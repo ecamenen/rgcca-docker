@@ -8,7 +8,7 @@
 
 #Settings files
 FILE_ERR="false"
-OUTFILES=( 'samples_space.pdf' 'corcircle.pdf' 'fingerprint.pdf' 'ave.pdf')
+OUTFILES=( 'individuals.pdf' 'corcircle.pdf' 'top_variables.pdf' 'ave.pdf' 'design.pdf' 'individuals.tsv' 'variables.tsv' 'rgcca.result.RData')
 
 #Initialization
 declare -x INFILE FUNC OPAR WARN
@@ -16,6 +16,7 @@ declare -i PARAMETER NBFAIL=0 NBTEST=0 EXIT
 declare -a TESTS WARNS EXITS
 echo '' > resultRuns.log
 echo '' > warnings.log
+export LANG=en_GB.utf8
 
 setUp(){
     INFILE="data/agriculture.tsv,data/industry.tsv,data/politic.tsv"
@@ -98,7 +99,7 @@ run(){
     let NBTEST+=1
 	printf "\n\n$NBTEST. ${TESTS[$PARAMETER]}\n" >> resultRuns.log 2>&1
     let PARAMETER+=1
-    Rscript  R/launcher.R -d ${INFILE} ${O_PAR} $@ > temp/log 2>&1
+    Rscript R/launcher.R -d ${INFILE} ${O_PAR} $@ > temp/log 2>&1
 }
 
 getElapsedTime(){
@@ -111,7 +112,7 @@ setOutputPar(){
     OPAR=""
     for i in `seq 0 $((${#OUTFILES[@]} -1))`; do
         let j=${i}+1
-        O_PAR=${O_PAR}"--output"${j}" temp/"${OUTFILES[i]}" "
+        O_PAR=${O_PAR}"--o"${j}" temp/"${OUTFILES[i]}" "
     done
 }
 
@@ -159,8 +160,8 @@ testsSep(){
 testsSepBad(){
     setUp
     EXIT=1
-    WARN="--separator must be comprise between 1 and 2 (1: Tabulation, 2: Semicolon, 3: Comma) [by default: 2]."
-    WARNS=( "${WARN}" "${WARN}" "agriculture block file has an only-column. Check the separator [by default: tabulation]." )
+    WARN="--separator must be comprise between 1 and 3 (1: Tabulation, 2: Semicolon, 3: Comma) [by default: 2], not be equal to"
+    WARNS=( "${WARN} 0" "${WARN} 4" "agriculture block file has an only-column. Check the separator." )
     TESTS=( '--separator 0' '--separator 4' '--separator 2' )
     test 1
 }
@@ -177,9 +178,10 @@ testsScheme(){
 testsSchemeBad(){
     setUp
     EXIT=1
-    WARN="--scheme must be comprise between 1 and 4 [by default: 2]."
+    WARN="--scheme must be comprise between 1 and 4 [by default: 2], not be equal to"
+    WARNS=( "$WARN 0." "$WARN 5.")
     TESTS=( '--scheme 0' '--scheme 5' )
-    test
+    test 1
 }
 
 testsResponse(){
@@ -192,8 +194,8 @@ testsResponseBad(){
     cat data/response.tsv | head -n -1 > temp2/response.tsv
     paste data/agriculture.tsv data/response.tsv > temp2/response2.tsv
     setUp
-    EXITS=(1 1 1 0)
-    WARNS=( "The number of rows of the response file (46) is different from those of the blocks (47). Possible mistake: header parameter is disabled, check if the file doesn't have one." "test.tsv file does not exist" "Please, select a response file with either qualitative data only or quantitative data only. The header must be disabled for quantitative data and activated for disjunctive table." "There is multiple columns in the response file. By default, only the first one is taken in account.")
+    EXITS=(0 1 1 0)
+    WARNS=( "" "test.tsv file does not exist" "Please, select a response file with either qualitative data only or quantitative data only." "There is multiple columns in the response file. By default, only the first one is taken in account.")
     TESTS=( '--group temp2/response.tsv' '--group test.tsv' "--group temp2/response2.tsv" "--group data/agriculture.tsv")
     test 2
 }
@@ -207,20 +209,19 @@ testsConnection(){
 testsConnectionBad(){
     setUp
     EXIT=1
-    WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The number of rows/columns of the connection matrix file must be equals to 4 (the number of blocks in the dataset, +1 with a superblock by default)." )
+    WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The number of rows/columns of the connection matrix file must be equal to 4 (the number of blocks in the dataset, +1 with a superblock by default)." )
     cat data/connection.tsv | tr '[1]' '[2]' > temp2/connection.tsv
     cat data/connection.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
     cat data/connection.tsv | head -n -1 > temp2/connection3.tsv
     cat data/connection.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
-    TESTS=( '-c temp2/connection.tsv' '-c temp2/connection2.tsv' '-c temp2/connection3.tsv' '-c temp2/connection4.tsv' )
+    TESTS=( '--superblock -c temp2/connection.tsv' '--superblock -c temp2/connection2.tsv' '--superblock -c temp2/connection3.tsv' '--superblock -c temp2/connection4.tsv' )
     test 1
 }
 
 testHeader(){
     setUp
-    EXIT=1
     WARN="agriculture file contains qualitative data. Please, transform them in a disjunctive table. Possible mistake: header parameter is disabled, check if the file doesn't have one."
-    TESTS=( '-H' )
+    TESTS=( '-H --group data/response3.tsv' )
     test
 }
 
@@ -241,14 +242,13 @@ testFileCharacter(){
     test
 }
 
-export LANG=en_GB.utf8
-
 testTauBad(){
     setUp
     EXIT=1
-    WARN="--tau must be comprise between 0 and 1 or must correspond to the character 'optimal' for automatic setting."
-    TESTS=( '--tau 1.1' '--tau 2' '--tau lkglkmgtk' )
-    test
+    WARN="--tau must be comprise between 0 and 1 or must correspond to the character 'optimal' for automatic setting (currently equals to"
+    WARNS=("$WARN 1.1)." "$WARN 2).")
+    TESTS=( '--tau 1.1' '--tau 2')
+    test 1
 }
 
 testTau(){
@@ -265,8 +265,23 @@ testTau(){
 
 testOtherRGCCAparam(){
     setUp
-    TESTS=( '--scale' '--superblock' '--bias' '--nmark 1' '--nmark 100')
+    TESTS=( '--scale' '--superblock' )
     test
+}
+
+testNmark(){
+    setUp
+    TESTS=('--nmark 2' '--nmark 100' '--nmark 1000000')
+    test
+}
+
+testNmarkBad(){
+    setUp
+    EXIT=1
+    WARN="--nmark must be upper than 2, not be equal to"
+    WARNS=( "$WARN 1." "$WARN 0." )
+    TESTS=('--nmark 1' '--nmark 0')
+    test 1
 }
 
 testsInit(){
@@ -282,30 +297,41 @@ testsInitBad(){
     setUp
     EXIT=1
     WARN='--init must be comprise between 1 and 2 (1: Singular Value Decompostion , 2: random) [by default: SVD].'
-    TESTS=( '--init 0' '--init 3' )
+    TESTS=( '--init 0' '--init 3' '--init 0.3')
     test
 }
 
 testNcomp(){
     setUp
-    TESTS=( '--ncomp 2' '--ncomp 2,2,2,2' '--compx 1' '--compy 2')
+    TESTS=( '--ncomp 2' '--ncomp 2,2,2' '--compx 1' '--compy 2')
     test
 }
 
 testNcompBad(){
     setUp
     EXIT=1
-    WARN='--ncomp must be comprise between 2 and 2 (the minimum number of variables among the whole blocks).'
-    TESTS=( '--ncomp 0' '--ncomp 1' '--ncomp 3' '--ncomp 3,2,2,2')
+    WARN1='--ncomp must be comprise between 2 and'
+    WARN2=', the number of variables of the block (currently equals to'
+    WARNS=("$WARN1 3$WARN2 0)." "$WARN1 3$WARN2 1)." "$WARN1 2$WARN2 4)." "--ncomp is a float (0.2) and must be an integer." "--ncomp is a character (kjlj) and must be an integer.")
+    TESTS=( '--ncomp 0' '--ncomp 1' '--ncomp 2,4,2,2' '--ncomp 2,0.2,2,2' '--ncomp kjlj')
+    test 1
+}
+
+testNcompXY(){
+    setUp
+    TESTS=( '--compx 1' '--compy 2' '--compx 2.1')
     test
 }
 
 testNcompXYBad(){
     setUp
     EXIT=1
-    WARN='must be comprise between 2 and 2 (the number of component selected).'
-    TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' )
-    test
+    WARN0='is currently equals to'
+    WARN1='and must be comprise between 1 and'
+    WARN2='(the number of component for the selected block).'
+    WARNS=("--compx $WARN0 0 $WARN1 2 $WARN2" "--compy $WARN0 0 $WARN1 2 $WARN2" "--compx $WARN0 3 $WARN1 2 $WARN2" "--compy $WARN0 3 $WARN1 2 $WARN2" "integer expected, got “mlkmk”")
+    TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' '--compy mlkmk' )
+    test 1
 }
 
 testBlock(){
@@ -319,7 +345,7 @@ testBlock(){
 testBlockBad(){
     setUp
     EXIT=1
-    WARN=( '--block must be lower than 4 (the maximum number of blocks).' )
+    WARN='--block must be lower than 4 (the maximum number of blocks), not be equal to 100.'
     TESTS=( '--block 100' )
     test
 }
@@ -335,22 +361,25 @@ testsSep
 testsSepBad
 testsScheme
 testsSchemeBad
-#testsResponse
+testsResponse
+testsResponseBad
 testsConnection
-#testsConnectionBad
-#testHeader
-testExcel
+testsConnectionBad
+testHeader
+#testExcel
 testFileCharacter
-#testsResponseBad
-#testsBlocksNrow
-#testTau
-#testTauBad
-#testOtherRGCCAparam
-testsInit
-testsInitBad
-#testNcomp
-#testNcompBad
-#testNcompXYBad
+testsBlocksNrow
+testTau
+testTauBad
+testOtherRGCCAparam
+testNmark
+testNmarkBad
+#testsInit
+#testsInitBad
+testNcomp
+testNcompBad
+testNcompXY
+testNcompXYBad
 testBlock
 testBlockBad
 
