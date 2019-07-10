@@ -202,19 +202,19 @@ testsResponseBad(){
 
 testsConnection(){
     setUp
-    TESTS=( '-c data/connection.tsv'  '-c data/connection2.tsv')
+    TESTS=( '--superblock -c data/connection2.tsv')
     test
 }
 
 testsConnectionBad(){
     setUp
     EXIT=1
-    WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The number of rows/columns of the connection matrix file must be equal to 4 (the number of blocks in the dataset, +1 with a superblock by default)." )
+    WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The connection file could not contain only 0." "The number of rows/columns of the connection matrix file must be equal to 3 (the number of blocks in the dataset, +1 with a superblock by default)." )
     cat data/connection.tsv | tr '[1]' '[2]' > temp2/connection.tsv
     cat data/connection.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
     cat data/connection.tsv | head -n -1 > temp2/connection3.tsv
     cat data/connection.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
-    TESTS=( '--superblock -c temp2/connection.tsv' '--superblock -c temp2/connection2.tsv' '--superblock -c temp2/connection3.tsv' '--superblock -c temp2/connection4.tsv' )
+    TESTS=( '--superblock -c temp2/connection.tsv' '--superblock -c temp2/connection2.tsv' '--superblock -c temp2/connection3.tsv' '--superblock -c temp2/connection4.tsv' "--superblock -c data/connection.tsv")
     test 1
 }
 
