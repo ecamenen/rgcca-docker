@@ -100,16 +100,17 @@ two components for each block.
 - ```--scale``` DO NOT standardize each block to zero mean and unit variances and then divide by the square root of its number of variables.
 - ```--bias``` Use an  unbiased estimator of the variance and the correlation
 - ```--superblock``` DO NOT use a superblock, a concatenation of all the blocks to better interpret the results.
-- ```-t (--tau)``` (FLOAT) Tau parameter in RGCCA. A tau near 0 maximize the covariance between blocks whereas a tau near 1 maximize
- the correlation between the blocks.
+- ```--ncomp``` (INTEGER) The number of components to use in the analysis for each block (should be greater than 1 and 
+lower than the minimum number of variable among the blocks). Could also be a list separated by comma. Ex: 2,2,3,2.
+- ```--tau``` (FLOAT) Tau parameter in RGCCA. A tau near 0 maximize the covariance between blocks whereas a tau near 1 maximize
+ the correlation between the blocks. Could also be a list separated by comma. Ex: 0,1,0.75,1
 - ```-g (--scheme)``` (INTEGER) Scheme function among 1: Horst, 2: Factorial, 3: Centroid, 4: x^4 (by default, factorial scheme).
 The identity (horst scheme) maximizes the sum of covariances between block components. The absolute value (centroid scheme)
 maximizes of the sum of the absolute values of the covariances. The square function (factorial scheme) maximizes the sum
 of squared covariances, or, more generally, for any even integer m, g(x)=x^m (m-scheme), maximizes the power of m of the
 sum of covariances.
 - ```--init``` (INTEGER) The mode of initialization of the algorithm (1: Singular Value Decompostion , 2: random).
-- ```--ncomp``` (INTEGER) The number of components to use in the analysis for each block (should be greater than 1 and lower than the minimum number of variable among the blocks).
- 
+
 #### Graphical parameters
 By default, the x-axis and y-axis are respectively the first and the second components, the number of top biomarkers is 100 and the superblock is used in graphics.
 
