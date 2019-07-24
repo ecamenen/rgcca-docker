@@ -66,13 +66,21 @@ For direct usage (Example from Russet data from RGCCA package [3]) :
 git clone https://gitlab.icm-institute.org/etienne.camenen/rgcca_docker
 cd rgcca_docker
 docker build -t rgcca .
+
+# Launch
 docker run rgcca -d data/agriculture.tsv,data/industry.tsv,data/politic.tsv
+
+# Launch and observe the results
+docker create -t -i --name rgccaDocker --entrypoint bash rgcca
+docker start rgccaDocker
+docker exec -t -i rgccaDocker bash
+Rscript R/launcher.R
 ```
 
 With parameters :
 
 ```
-docker run --datasets <list_block_files> [--help] [--names <list_block_names] [--connection <connection_file>] [--response <response_file>] [--scheme <scheme_type>] [--output1 <variables_space_fig_name>] [--output3 <samples_space_fig_name>] [--output3 <biomarkers_fig_name>] [--header] [--separator <separator_type>]
+--datasets <list_block_files> [--help] [--names <list_block_names] [--connection <connection_file>] [--response <response_file>] [--scheme <scheme_type>] [--output1 <variables_space_fig_name>] [--output3 <samples_space_fig_name>] [--output3 <biomarkers_fig_name>] [--header] [--separator <separator_type>]
 ```
 
 #### Files parameters

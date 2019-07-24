@@ -37,4 +37,4 @@ COPY functional_tests.sh /functional_tests.sh
 COPY data/ /data/
 
 ENTRYPOINT ["Rscript", "R/launcher.R"]
-CMD ["-d", "data/agriculture.tsv"]
+CMD ["-h"]
