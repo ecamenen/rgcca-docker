@@ -5,12 +5,16 @@
 # EDAM operation: analysis, correlation, visualisation
 # Short description: performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space.
 
-FROM rocker/tidyverse:3.4.1
+FROM ubuntu:latest
 
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION hotfix/3.1
 ENV TOOL_NAME rgcca_Rpackage
+ENV DEBIAN_FRONTEND=noninteractive
+
+
+
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
@@ -20,10 +24,9 @@ LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
 RUN apt-get update -qq && \
-    apt-get upgrade -y && \
-    apt-get install -y git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science && \
-    apt-get install -y r-base r-cran-ggplot2 r-cran-scales r-cran-shiny r-cran-igraph
-RUN R -e 'install.packages(c("RGCCA", "optparse", "shinyjs", "plotly", "visNetwork", "devtools", "rmarkdown", "pander", "bsplus"))'
+    apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
+RUN R -e 'defaults write org.R-project.R force.LANG en_US.UTF-8' && \
+    R -e 'install.packages(c("RGCCA", "ggplot2", "optparse", "scales", "plotly", "visNetwork", "igraph", "devtools", "rmarkdown", "pander", "shiny", "shinyjs", "bsplus"))'
 RUN R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
     git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
     cd $TOOL_NAME && \
