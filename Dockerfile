@@ -11,8 +11,8 @@ MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION hotfix/3.1
 ENV TOOL_NAME rgcca_Rpackage
-ENV APKGS git pango-dev
-ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph shiny shinyjs bsplus
+ENV APKGS git pango-dev linux-headers
+ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph shiny shinyjs bsplus devtools
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
