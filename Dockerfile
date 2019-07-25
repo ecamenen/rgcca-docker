@@ -7,15 +7,13 @@
 
 FROM ubuntu:latest
 
-MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
+MAINTAINER Etienne CAMENE ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION hotfix/3.1
 ENV TOOL_NAME rgcca_Rpackage
-ENV TZ America/New_York
 ENV DEBIAN_FRONTEND=noninteractive
-
-
-
+ENV TZ America/New_York
+#ENV LC_ALL en_US.UTF-8
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
@@ -24,9 +22,15 @@ LABEL docker.version=2.0
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
-
 RUN apt-get update -qq && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
+    apt install -y locales && \
+    dpkg-reconfigure -f noninteractive locales && \
+    locale-gen en_US.UTF-8 && \
+    apt install -y r-base && \
+    echo "export LC_ALL=en_US.UTF-8" >> /etc/bash.bashrc && \
+    /bin/bash -c " source /etc/bash.bashrc" && \
+    R -e 'sessionInfo()' && \
     apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
 RUN R -e 'install.packages(c("RGCCA", "ggplot2", "optparse", "scales", "plotly", "visNetwork", "igraph", "devtools", "rmarkdown", "pander", "shiny", "shinyjs", "bsplus"))'
 RUN R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
