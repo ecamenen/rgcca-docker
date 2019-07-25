@@ -7,7 +7,7 @@
 
 FROM registry.gitlab.com/artemklevtsov/r-alpine/shiny-server:latest
 
-MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
+MAINTAINER Etienne CAMENE ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION hotfix/3.1
 ENV TOOL_NAME rgcca_Rpackage
@@ -23,18 +23,21 @@ LABEL EDAM.operation="analysis,correlation,visualisation"
 
 RUN apk update -qq && \
     apk add --no-cache ${APKGS} && \
-    Rscript -e 'install.packages(commandArgs(TRUE))' ${RPKGS} && \
-    git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
+    Rscript -e 'install.packages(commandArgs(TRUE))' ${RPKGS}
+RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
     cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
 	cd / && \
 	apk del --purge git g++ && \
+	mkdir -p /inst/shiny && \
 	cp -r $TOOL_NAME/inst/extdata/ $TOOL_NAME/R/ / && \
+	mv $TOOL_NAME/inst/shiny /inst/shiny && \
 	mv extdata/ data && \
 	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/* $TOOL_NAME
 
 COPY functional_tests.sh /functional_tests.sh
 COPY data/ /data/
 
-ENTRYPOINT ["Rscript", "R/launcher.R"]
-CMD ["-h"]
+# EXPOSE 3838
+
+ENTRYPOINT ["Rscript", "inst/shiny/app.R"]
