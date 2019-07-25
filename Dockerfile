@@ -11,6 +11,7 @@ MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION hotfix/3.1
 ENV TOOL_NAME rgcca_Rpackage
+ENV TZ America/New_York
 ENV DEBIAN_FRONTEND=noninteractive
 
 
@@ -23,10 +24,11 @@ LABEL docker.version=2.0
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
+
 RUN apt-get update -qq && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
-RUN R -e 'defaults write org.R-project.R force.LANG en_US.UTF-8' && \
-    R -e 'install.packages(c("RGCCA", "ggplot2", "optparse", "scales", "plotly", "visNetwork", "igraph", "devtools", "rmarkdown", "pander", "shiny", "shinyjs", "bsplus"))'
+RUN R -e 'install.packages(c("RGCCA", "ggplot2", "optparse", "scales", "plotly", "visNetwork", "igraph", "devtools", "rmarkdown", "pander", "shiny", "shinyjs", "bsplus"))'
 RUN R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
     git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
     cd $TOOL_NAME && \
