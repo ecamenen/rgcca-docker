@@ -18,7 +18,7 @@ ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph devtools rmarkd
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
 LABEL tool="{TOOL_NAME}"
-LABEL docker.version=2.0
+LABEL docker.version=1.0
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
@@ -38,7 +38,9 @@ RUN apt-get update -qq && \
 	apt-get purge -y git g++ && \
 	apt-get autoremove --purge -y && \
 	apt-get clean && \
+	mkdir -p /inst/shiny && \
 	cp -r $TOOL_NAME/inst/extdata/ $TOOL_NAME/R/ / && \
+	mv $TOOL_NAME/inst/shiny inst/ && \
 	mv extdata/ data && \
 	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/* $TOOL_NAME
 
@@ -46,7 +48,6 @@ COPY functional_tests.sh /functional_tests.sh
 COPY data/ /data/
 
 RUN chmod +x /functional_tests.sh && \
-    ./functional_tests.sh && \
-    cat resultRuns.log
+    ./functional_tests.sh
 
-ENTRYPOINT ["Rscript", "R/launcher.R"]
+ENTRYPOINT ["Rscript", "inst/shiny/app.R"]

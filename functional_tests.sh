@@ -16,7 +16,7 @@ declare -i PARAMETER NBFAIL=0 NBTEST=0 EXIT
 declare -a TESTS WARNS EXITS
 echo '' > resultRuns.log
 echo '' > warnings.log
-export LANG=en_GB.utf8
+export LANG=en_US.utf8
 
 setUp(){
     INFILE="data/agriculture.tsv,data/industry.tsv,data/politic.tsv"
@@ -186,13 +186,13 @@ testsSchemeBad(){
 
 testsResponse(){
     setUp
-    TESTS=( '--group data/response.tsv' '--group data/response2.tsv' '--group data/response3.tsv' )
+    TESTS=( '--group data/political_system.tsv' '--group data/response2.tsv' '--group data/response3.tsv' )
     test
 }
 
 testsResponseBad(){
-    cat data/response.tsv | head -n -1 > temp2/response.tsv
-    paste data/agriculture.tsv data/response.tsv > temp2/response2.tsv
+    cat data/political_system.tsv | head -n -1 > temp2/response.tsv
+    paste data/agriculture.tsv data/political_system.tsv > temp2/response2.tsv
     setUp
     EXITS=(0 1 1 0)
     WARNS=( "" "test.tsv file does not exist" "Please, select a response file with either qualitative data only or quantitative data only." "There is multiple columns in the response file. By default, only the first one is taken in account.")
@@ -233,7 +233,7 @@ testExcel(){
 }
 
 testFileCharacter(){
-    paste data/agriculture.tsv data/response.tsv > temp/dummyFile.tsv
+    paste data/agriculture.tsv data/political_system.tsv > temp/dummyFile.tsv
     setUp
     EXIT=1
     WARN="dummyFile file contains qualitative data. Please, transform them in a disjunctive table."
@@ -329,7 +329,7 @@ testNcompXYBad(){
     WARN0='is currently equals to'
     WARN1='and must be comprise between 1 and'
     WARN2='(the number of component for the selected block).'
-    WARNS=("--compx $WARN0 0 $WARN1 2 $WARN2" "--compy $WARN0 0 $WARN1 2 $WARN2" "--compx $WARN0 3 $WARN1 2 $WARN2" "--compy $WARN0 3 $WARN1 2 $WARN2" "integer expected, got “mlkmk”")
+    WARNS=("--compx $WARN0 0 $WARN1 2 $WARN2" "--compy $WARN0 0 $WARN1 2 $WARN2" "--compx $WARN0 3 $WARN1 2 $WARN2" "--compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got "mlkmk"')
     TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' '--compy mlkmk' )
     test 1
 }
@@ -388,4 +388,4 @@ printf "\n$NBTEST tests, $NBFAIL failed.$ERRORS\n"
 getElapsedTime ${START_TIME}
 [[ -z $(cat warnings.log) ]] && rm warnings.log
 [[ -z ${ERRORS} ]] || exit 0
-exit 0
+exit 1
