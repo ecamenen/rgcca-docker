@@ -7,13 +7,13 @@
 
 FROM ubuntu:latest
 
-MAINTAINER Etienne CAMENE ( iconics@icm-institute.org )
+MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION hotfix/3.1
 ENV TOOL_NAME rgcca_Rpackage
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ America/New_York
-#ENV LC_ALL en_US.UTF-8
+ENV DEBIAN_FRONTEND noninteractive
+ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
+ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph devtools rmarkdown pander shiny shinyjs bsplus
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
@@ -23,25 +23,18 @@ LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
 RUN apt-get update -qq && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
-    apt install -y locales && \
-    dpkg-reconfigure -f noninteractive locales && \
-    locale-gen en_US.UTF-8 && \
-    apt install -y r-base && \
-    echo "export LC_ALL=en_US.UTF-8" >> /etc/bash.bashrc && \
-    /bin/bash -c " source /etc/bash.bashrc" && \
-    R -e 'sessionInfo()' && \
-    apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
-RUN R -e 'install.packages(c("RGCCA", "ggplot2", "optparse", "scales", "plotly", "visNetwork", "igraph", "devtools", "rmarkdown", "pander", "shiny", "shinyjs", "bsplus"))'
-RUN R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
+    apt-get install -y ${PKGS} && \
+    Rscript -e 'install.packages(commandArgs(TRUE))' ${RPKGS} && \
+    R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
     git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
     cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
-    R -e 'devtools::document()'
-RUN cd / && \
+    R -e 'devtools::document()' && \
+    cd / && \
     R -e 'devtools::build_vignettes("rgcca_Rpackage")' && \
     R CMD build --no-build-vignettes $TOOL_NAME && \
     R CMD check rgccaLauncher_1.0.tar.gz && \
+    R -e "install.packages('rgccaLauncher_1.0.tar.gz', repos = NULL, type = 'source')" && \
 	apt-get purge -y git g++ && \
 	apt-get autoremove --purge -y && \
 	apt-get clean && \
@@ -54,7 +47,6 @@ COPY data/ /data/
 
 RUN chmod +x /functional_tests.sh && \
     ./functional_tests.sh && \
-    cat resultRuns.log && \
-    cat warnings.log && echo "done"
+    cat resultRuns.log
 
 ENTRYPOINT ["Rscript", "R/launcher.R"]
