@@ -16,7 +16,7 @@ declare -i PARAMETER NBFAIL=0 NBTEST=0 EXIT
 declare -a TESTS WARNS EXITS
 echo '' > resultRuns.log
 echo '' > warnings.log
-export LANG=en_US.utf8
+export LANG=en_GB.utf8
 
 setUp(){
     INFILE="data/agriculture.tsv,data/industry.tsv,data/politic.tsv"
@@ -329,7 +329,7 @@ testNcompXYBad(){
     WARN0='is currently equals to'
     WARN1='and must be comprise between 1 and'
     WARN2='(the number of component for the selected block).'
-    WARNS=("--compx $WARN0 0 $WARN1 2 $WARN2" "--compy $WARN0 0 $WARN1 2 $WARN2" "--compx $WARN0 3 $WARN1 2 $WARN2" "--compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got "mlkmk"')
+    WARNS=("--compx $WARN0 0 $WARN1 2 $WARN2" "--compy $WARN0 0 $WARN1 2 $WARN2" "--compx $WARN0 3 $WARN1 2 $WARN2" "--compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got “mlkmk”')
     TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' '--compy mlkmk' )
     test 1
 }

@@ -11,6 +11,8 @@ MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION hotfix/3.1
 ENV TOOL_NAME rgcca_Rpackage
+ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
+ENV RPKGS MASS lattice roxygen2 testthat RGCCA ggplot2 optparse scales plotly visNetwork igraph devtools rmarkdown pander shiny shinyjs bsplus
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
@@ -19,21 +21,15 @@ LABEL docker.version=1.0
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
-RUN apt-get update -qq
-
-ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
-
-RUN apt-get install -y ${PKGS}
-
-ENV RPKGS MASS lattice roxygen2 testthat RGCCA ggplot2 optparse scales plotly visNetwork igraph devtools rmarkdown pander shiny shinyjs bsplus
-
-RUN Rscript -e 'install.packages(commandArgs(TRUE))' ${RPKGS}
-RUN R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
+RUN apt-get update -qq && \
+    apt-get install -y ${PKGS} && \
+    Rscript -e 'install.packages(commandArgs(TRUE))' ${RPKGS} && \
+    R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
     git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
     cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
-    R -e 'devtools::document()'
-RUN cd / && \
+    R -e 'devtools::document()' && \
+    cd / && \
     R -e 'devtools::build_vignettes("rgcca_Rpackage")' && \
     R CMD build --no-build-vignettes $TOOL_NAME && \
     R CMD check rgccaLauncher_1.0.tar.gz && \
