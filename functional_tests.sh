@@ -387,5 +387,5 @@ rm -r temp/ temp2/
 printf "\n$NBTEST tests, $NBFAIL failed.$ERRORS\n"
 getElapsedTime ${START_TIME}
 [[ -z $(cat warnings.log) ]] && rm warnings.log
-[[ -z ${ERRORS} ]] || exit 0
-exit 1
+[[ -z ${ERRORS} ]] || exit 1
+exit 0

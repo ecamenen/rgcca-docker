@@ -5,7 +5,7 @@
 # EDAM operation: analysis, correlation, visualisation
 # Short description: performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space.
 
-FROM ubuntu:latest
+FROM ubuntu:16.04
 
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
@@ -14,6 +14,7 @@ ENV TOOL_NAME rgcca_Rpackage
 ENV DEBIAN_FRONTEND noninteractive
 ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
 ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph devtools rmarkdown pander shiny shinyjs bsplus
+ENV _R_CHECK_FORCE_SUGGESTS_ FALSE
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
@@ -22,11 +23,11 @@ LABEL docker.version=1.0
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
-RUN apt-get update -qq && \
-    apt-get install -y ${PKGS} && \
-    Rscript -e 'install.packages(commandArgs(TRUE))' ${RPKGS} && \
-    R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
-    git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
+RUN apt-get update -qq
+RUN apt-get install -y ${PKGS}
+RUN Rscript -e 'install.packages(commandArgs(TRUE),repos = "http://cran.us.r-project.org")' ${RPKGS}
+#RUN R -e 'devtools::install_github(c("ijlyttle/bsplus"))'
+RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
     cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
     R -e 'devtools::document()' && \
