@@ -21,32 +21,23 @@ LABEL docker.version=1.0
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
-RUN apt-get update -qq && \
-    apt-get install -y ${PKGS} && \
-    Rscript -e 'install.packages(commandArgs(TRUE))' ${RPKGS} && \
-    R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
-    git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
+RUN apt-get update -qq
+RUN apt-get install -y ${PKGS}
+RUN Rscript -e 'install.packages(commandArgs(TRUE), repos = "http://cran.us.r-project.org")' ${RPKGS} && \
+    R -e 'devtools::install_github(c("ijlyttle/bsplus"))'
+RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
     cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
-    R -e 'devtools::document()' && \
     cd / && \
-    R -e 'devtools::build_vignettes("rgcca_Rpackage")' && \
-    R CMD build --no-build-vignettes $TOOL_NAME && \
-    R CMD check rgccaLauncher_1.0.tar.gz && \
-    R -e "install.packages('rgccaLauncher_1.0.tar.gz', repos = NULL, type = 'source')" && \
 	apt-get purge -y git g++ && \
 	apt-get autoremove --purge -y && \
-	apt-get clean && \
-	mkdir -p /inst/shiny && \
-	cp -r $TOOL_NAME/inst/extdata/ $TOOL_NAME/R/ / && \
-	mv $TOOL_NAME/inst/shiny inst && \
-	mv extdata/ data && \
+	apt-get clean
+RUN cp -r $TOOL_NAME/R/ /srv/R && \
+	mv $TOOL_NAME/inst/shiny /srv/shiny-server/ && \
+	mv $TOOL_NAME/inst/extdata/ data/ && \
+	cp -r /srv/R /R/ && \
 	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/* $TOOL_NAME
 
-COPY functional_tests.sh /functional_tests.sh
-COPY data/ /data/
+EXPOSE 3838
 
-RUN chmod +x /functional_tests.sh && \
-    ./functional_tests.sh
-
-ENTRYPOINT ["Rscript", "inst/shiny/app.R"]
+CMD ["/usr/bin/shiny-server.sh"]
