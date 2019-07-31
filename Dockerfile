@@ -3,9 +3,10 @@
 # Contact: arthur.tenenhaus@l2s.centralesupelec.fr
 # Key-words: data integration, omics, multi-block, regularized generalized, canonical correlation analysis, RGCCA
 # EDAM operation: analysis, correlation, visualisation
-# Short description: performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space.
+# Short description: performs multi-variate analysis (e.g., PCA, CCA, PLS, R/SGCCA) and produces textual and graphical outputs (e.g., variables and individuals plots).
 
-FROM ubuntu:16.04
+ARG U_VERSION=latest
+FROM ubuntu:${U_VERSION}
 
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
@@ -13,7 +14,7 @@ ENV TOOL_VERSION hotfix/3.1
 ENV TOOL_NAME rgcca_Rpackage
 ENV DEBIAN_FRONTEND noninteractive
 ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
-ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph devtools rmarkdown pander shiny shinyjs bsplus
+ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph devtools rmarkdown pander shiny shinyjs
 ENV _R_CHECK_FORCE_SUGGESTS_ FALSE
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
@@ -23,10 +24,9 @@ LABEL docker.version=1.0
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
-RUN apt-get update -qq
-RUN apt-get install -y ${PKGS}
+RUN apt-get update -qq && \
+    apt-get install -y ${PKGS}
 RUN Rscript -e 'install.packages(commandArgs(TRUE),repos = "http://cran.us.r-project.org")' ${RPKGS}
-#RUN R -e 'devtools::install_github(c("ijlyttle/bsplus"))'
 RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/BrainAndSpineInstitute/$TOOL_NAME && \
     cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
@@ -51,4 +51,4 @@ COPY data/ /data/
 RUN chmod +x /functional_tests.sh && \
     ./functional_tests.sh
 
-ENTRYPOINT ["Rscript", "inst/shiny/app.R"]
+ENTRYPOINT ["Rscript", "R/launcher.R", "-h"]
