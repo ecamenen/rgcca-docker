@@ -14,12 +14,12 @@ analysis, correlation, visualisation
 arthur.tenenhaus@l2s.centralesupelec.fr
 
 #### Short description
-Performs multi-variate analysis (e.g., PCA, CCA, PLS, R/SGCCA) and projects the variables and samples into bi-dimensional plots.
+Performs multi-variate analysis (PCA, CCA, PLS, R/SGCCA, etc.) and produces textual and graphical outputs (e.g. variables and individuals plots).
 
 ---
 
 ## Description
-A user-friendly multi-blocks analysis (Regularized Generalized Canonical Correlation Analysis, RGCCA) with all default settings predefined [1, 2]. Produce figures to help clinicians to identify biomarkers: samples and variables projected on the two first component of the multi-block analysis, list of top biomarkers and explained variance in the model.
+A user-friendly multi-blocks analysis (Regularized Generalized Canonical Correlation Analysis, RGCCA) as described in [1] and [2] with all default settings predefined. The software produces figures to explore the analysis' results: individuals and variables projected on two components of the multi-block analysis, list of top variables and explained variance in the model.
  
 More information about:
 - [RGCCA](https://cran.r-project.org/web/packages/RGCCA/vignettes/vignette_RGCCA.pdf)
