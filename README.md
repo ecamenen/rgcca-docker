@@ -53,7 +53,7 @@ docker exec -ti rgccaDocker bash
 Inside the docker, execute:
 
 ```
-Rscript R/launcher.R --datasets <list_block_files> [--help] [--names <list_block_names] [--connection <connection_file>] [--response <response_file>] [--scheme <scheme_type>] [--output1 <variables_space_fig_name>] [--output3 <samples_space_fig_name>] [--output3 <biomarkers_fig_name>] [--header] [--separator <separator_type>]
+Rscript R/launcher.R --datasets <list_block_files> 
 ```
 
 More information about the command-line parameters [here](https://github.com/BrainAndSpineInstitute/rgcca_Rpackage#command-line).
