@@ -10,11 +10,11 @@ FROM ubuntu:${U_VERSION}
 
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
-ENV TOOL_VERSION hotfix/3.1
+ENV TOOL_VERSION develop
 ENV TOOL_NAME rgcca_Rpackage
 ENV DEBIAN_FRONTEND noninteractive
 ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
-ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph devtools rmarkdown pander shiny shinyjs
+ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph ggrepel devtools rmarkdown pander shiny shinyjs bsplus
 ENV _R_CHECK_FORCE_SUGGESTS_ FALSE
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
@@ -34,8 +34,8 @@ RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.co
     cd / && \
     R -e 'devtools::build_vignettes("rgcca_Rpackage")' && \
     R CMD build --no-build-vignettes $TOOL_NAME && \
-    R CMD check rgccaLauncher_1.0.tar.gz && \
-    R -e "install.packages('rgccaLauncher_1.0.tar.gz', repos = NULL, type = 'source')" && \
+    #R CMD check rgccaLauncher_0.3.2.tar.gz && \
+    R -e "install.packages('rgccaLauncher_0.3.2.tar.gz', repos = NULL, type = 'source')" && \
 	apt-get purge -y git g++ && \
 	apt-get autoremove --purge -y && \
 	apt-get clean && \
