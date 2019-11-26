@@ -160,8 +160,8 @@ testsSep(){
 testsSepBad(){
     setUp
     EXIT=1
-    WARN="--separator must be comprise between 1 and 3 (1: Tabulation, 2: Semicolon, 3: Comma) [by default: 2], not be equal to"
-    WARNS=( "${WARN} 0" "${WARN} 4" "agriculture block file has an only-column. Check the separator." )
+    WARN="separator should be comprise between 1 and 3 (1: Tabulation, 2: Semicolon, 3: Comma) [by default: 2], not be equal to"
+    WARNS=( "${WARN} 0" "${WARN} 4" "agriculture.tsv has an only-column. Check the separator." )
     TESTS=( '--separator 0' '--separator 4' '--separator 2' )
     test 1
 }
@@ -178,7 +178,7 @@ testsScheme(){
 testsSchemeBad(){
     setUp
     EXIT=1
-    WARN="--scheme must be comprise between 1 and 4 [by default: 2], not be equal to"
+    WARN="scheme should be comprise between 1 and 4 [by default: 2], not be equal to"
     WARNS=( "$WARN 0." "$WARN 5.")
     TESTS=( '--scheme 0' '--scheme 5' )
     test 1
@@ -192,11 +192,10 @@ testsResponse(){
 
 testsResponseBad(){
     cat data/political_system.tsv | head -n -1 > temp2/response.tsv
-    paste data/agriculture.tsv data/political_system.tsv > temp2/response2.tsv
     setUp
-    EXITS=(0 1 1 0)
-    WARNS=( "" "test.tsv file does not exist" "Please, select a response file with either qualitative data only or quantitative data only." "There is multiple columns in the response file. By default, only the first one is taken in account.")
-    TESTS=( '--group temp2/response.tsv' '--group test.tsv' "--group temp2/response2.tsv" "--group data/agriculture.tsv")
+    EXITS=(0 1 0)
+    WARNS=( "" "test.tsv does not exist" "There is multiple columns in the response file. By default, only the first one is taken in account.")
+    TESTS=( '--group temp2/response.tsv' '--group test.tsv' "--group data/agriculture.tsv")
     test 2
 }
 
@@ -209,7 +208,7 @@ testsConnection(){
 testsConnectionBad(){
     setUp
     EXIT=1
-    WARNS=( "The connection file must contains only 0 or 1." "The diagonal of the connection matrix file must be 0." "The connection file must be a symmetric matrix." "The connection file could not contain only 0." "The number of rows/columns of the connection matrix file must be equal to 3 (the number of blocks in the dataset, +1 with a superblock by default)." )
+    WARNS=( "The connection file should contain only 0 or 1." "The diagonal of the connection matrix file should be 0." "The connection file should be a symmetric matrix." "The connection file should not contain only 0." "connection matrix should have the same number of columns (actually 4) than the number of blocks (3)." )
     cat data/connection2.tsv | tr '[1]' '[2]' > temp2/connection.tsv
     cat data/connection2.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
     cat data/connection2.tsv | head -n -1 > temp2/connection3.tsv
@@ -236,7 +235,7 @@ testFileCharacter(){
     paste data/agriculture.tsv data/political_system.tsv > temp/dummyFile.tsv
     setUp
     EXIT=1
-    WARN="dummyFile file contains qualitative data. Please, transform them in a disjunctive table."
+    WARN="dummyFile contains qualitative data. Please, transform them in a disjunctive table."
     INFILE="temp/dummyFile.tsv"
     TESTS=( '' )
     test
@@ -245,9 +244,9 @@ testFileCharacter(){
 testTauBad(){
     setUp
     EXIT=1
-    WARN="--tau must be comprise between 0 and 1 or must correspond to the character 'optimal' for automatic setting (currently equals to"
-    WARNS=("$WARN 1.1)." "$WARN 2).")
-    TESTS=( '--tau 1.1' '--tau 2')
+    WARN="tau should be comprise between 0 and 1 or should correspond to the character 'optimal' for automatic setting (currently equals to"
+    WARNS=("$WARN 2).")
+    TESTS=('--tau 2')
     test 1
 }
 
@@ -260,6 +259,7 @@ testTau(){
     done
     TESTS[6]="--tau optimal"
     TESTS[7]="--tau 0,1,0,0.75"
+    TESTS[8]="--tau 0.1"
     test
 }
 
@@ -278,8 +278,8 @@ testNmark(){
 testNmarkBad(){
     setUp
     EXIT=1
-    WARN="--nmark must be upper than 2, not be equal to"
-    WARNS=( "$WARN 1." "$WARN 0." )
+    WARN="nmark should be higher than or equal to 2."
+    WARNS=( "$WARN" "$WARN" )
     TESTS=('--nmark 1' '--nmark 0')
     test 1
 }
@@ -296,7 +296,7 @@ testsInit(){
 testsInitBad(){
     setUp
     EXIT=1
-    WARN='--init must be comprise between 1 and 2 (1: Singular Value Decompostion , 2: random) [by default: SVD].'
+    WARN='init should be comprise between 1 and 2 (1: Singular Value Decompostion , 2: random) [by default: SVD].'
     TESTS=( '--init 0' '--init 3' '--init 0.3')
     test
 }
@@ -310,9 +310,8 @@ testNcomp(){
 testNcompBad(){
     setUp
     EXIT=1
-    WARN1='--ncomp must be comprise between 2 and'
-    WARN2=', the number of variables of the block (currently equals to'
-    WARNS=("$WARN1 3$WARN2 0)." "$WARN1 3$WARN2 1)." "$WARN1 2$WARN2 4)." "--ncomp is a float (0.2) and must be an integer." "--ncomp is a character (kjlj) and must be an integer.")
+    WARN='ncomp should be higher than or equal to 2.'
+    WARNS=("$WARN" "$WARN" "ncomp should be comprise between 2 and 2, the number of variables of the block (currently equals to 4)" "$WARN" "ncomp should be numeric.")
     TESTS=( '--ncomp 0' '--ncomp 1' '--ncomp 2,4,2,2' '--ncomp 2,0.2,2,2' '--ncomp kjlj')
     test 1
 }
@@ -326,10 +325,11 @@ testNcompXY(){
 testNcompXYBad(){
     setUp
     EXIT=1
+    WARN="should be higher than or equal to 1."
     WARN0='is currently equals to'
-    WARN1='and must be comprise between 1 and'
+    WARN1='and should be comprise between 1 and'
     WARN2='(the number of component for the selected block).'
-    WARNS=("--compx $WARN0 0 $WARN1 2 $WARN2" "--compy $WARN0 0 $WARN1 2 $WARN2" "--compx $WARN0 3 $WARN1 2 $WARN2" "--compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got "mlkmk"')
+    WARNS=("compx $WARN" "compy $WARN" "compx $WARN0 3 $WARN1 2 $WARN2" "compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got "mlkmk"')
     TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' '--compy mlkmk' )
     test 1
 }
@@ -345,7 +345,7 @@ testBlock(){
 testBlockBad(){
     setUp
     EXIT=1
-    WARN='--block must be lower than 4 (the maximum number of blocks), not be equal to 100.'
+    WARN='block should be lower than 4 (the maximum number of blocks), not be equal to 100.'
     TESTS=( '--block 100' )
     test
 }
