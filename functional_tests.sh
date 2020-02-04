@@ -99,7 +99,7 @@ run(){
     let NBTEST+=1
 	printf "\n\n$NBTEST. ${TESTS[$PARAMETER]}\n" >> resultRuns.log 2>&1
     let PARAMETER+=1
-    Rscript R/launcher.R -d ${INFILE} ${O_PAR} $@ > temp/log 2>&1
+    Rscript inst/launcher.R -d ${INFILE} ${O_PAR} $@ > temp/log 2>&1
 }
 
 getElapsedTime(){
@@ -208,12 +208,11 @@ testsConnection(){
 testsConnectionBad(){
     setUp
     EXIT=1
-    WARNS=( "The connection file should contain only 0 or 1." "The diagonal of the connection matrix file should be 0." "The connection file should be a symmetric matrix." "The connection file should not contain only 0." "connection matrix should have the same number of columns (actually 4) than the number of blocks (3)." )
+    WARNS=( "The connection file should contain only 0 or 1." "The connection file should be a symmetric matrix." "The connection file should not contain only 0." "connection matrix should have the same number of columns (actually 4) than the number of blocks (3)." )
     cat data/connection2.tsv | tr '[1]' '[2]' > temp2/connection.tsv
-    cat data/connection2.tsv | tr '[0]' '[2]' > temp2/connection2.tsv
     cat data/connection2.tsv | head -n -1 > temp2/connection3.tsv
     cat data/connection2.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
-    TESTS=( '--superblock -c temp2/connection.tsv' '--superblock -c temp2/connection2.tsv' '--superblock -c temp2/connection3.tsv' '--superblock -c temp2/connection4.tsv' "--superblock -c data/connection2.tsv")
+    TESTS=( '--superblock -c temp2/connection.tsv' '--superblock -c temp2/connection3.tsv' '--superblock -c temp2/connection4.tsv' "--superblock -c data/connection2.tsv")
     test 1
 }
 
