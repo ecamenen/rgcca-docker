@@ -53,7 +53,7 @@ docker exec -ti rgccaDocker bash
 Inside the docker, execute:
 
 ```
-Rscript R/launcher.R --datasets <list_block_files> 
+Rscript inst/launcher.R --datasets <list_block_files> 
 ```
 
 More information about the command-line parameters [here](https://github.com/BrainAndSpineInstitute/rgcca_Rpackage#command-line).
