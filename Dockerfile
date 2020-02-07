@@ -9,9 +9,9 @@ FROM rocker/shiny
 
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
-ENV TOOL_VERSION develop
+ENV TOOL_VERSION 2.3.0
 ENV TOOL_NAME RGCCA
-ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git r-base
+ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git
 ENV RPKGS MASS lattice roxygen2 testthat RGCCA ggplot2 optparse scales plotly visNetwork igraph ggrepl devtools shiny shinyjs vegan gridExtra nnet Deriv
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
@@ -23,7 +23,7 @@ LABEL EDAM.operation="analysis,correlation,visualisation"
 
 RUN apt-get update -qq && \
     apt-get install -y ${PKGS}
-RUN Rscript -e 'install.packages(commandArgs(TRUE), repos = "http://cran.wustl.edu")' ${RPKGS} && \
+RUN Rscript -e 'install.packages(commandArgs(TRUE), repos = "http://cran.us.r-project.org")' ${RPKGS} && \
     R -e 'devtools::install_github(c("ijlyttle/bsplus"))'
 RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/rgcca-factory/$TOOL_NAME && \
     cd $TOOL_NAME && \
