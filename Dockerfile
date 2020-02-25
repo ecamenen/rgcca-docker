@@ -10,24 +10,24 @@ FROM ubuntu:${U_VERSION}
 
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
-ENV TOOL_VERSION develop
+ENV TOOL_VERSION 2.3.0
 ENV TOOL_NAME RGCCA
 ENV DEBIAN_FRONTEND noninteractive
 ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
-ENV RPKGS RGCCA ggplot2 optparse scales plotly visNetwork igraph ggrepel devtools rmarkdown pander shiny shinyjs bsplus vegan gridExtra nnet Deriv
+ENV RPKGS ggplot2 optparse scales igraph vegan gridExtra Deriv openxlsx devtools rmarkdown pander
 ENV _R_CHECK_FORCE_SUGGESTS_ FALSE
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
 LABEL tool="{TOOL_NAME}"
 LABEL docker.version=1.0
+#1.2
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
 RUN apt-get update -qq && \
     apt-get install -y ${PKGS}
-RUN Rscript -e 'install.packages(commandArgs(TRUE),repos = "http://cran.wustl.edu")' ${RPKGS}
-
+RUN Rscript -e 'install.packages(commandArgs(TRUE),repos = "http://cran.us.r-project.org")' ${RPKGS}
 RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/rgcca-factory/$TOOL_NAME && \
     cd $TOOL_NAME && \
 	git checkout $TOOL_VERSION && \
@@ -35,8 +35,8 @@ RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.co
     cd / && \
     R -e 'devtools::build_vignettes("RGCCA")' && \
     R CMD build --no-build-vignettes $TOOL_NAME && \
-    #R CMD check *.tar.gz && \
-    R -e "install.packages('RGCCA_2.0.tar.gz', repos = NULL, type = 'source')" && \
+    R CMD check *.tar.gz && \
+    R -e "install.packages('RGCCA_3.0.tar.gz', repos = NULL, type = 'source')" && \
 	apt-get purge -y git g++ && \
 	apt-get autoremove --purge -y && \
 	apt-get clean && \
@@ -50,7 +50,8 @@ RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.co
 COPY functional_tests.sh /functional_tests.sh
 COPY data/ /data/
 
-RUN chmod +x /functional_tests.sh # && \
+RUN chmod +x /functional_tests.sh
+ # && \
     # ./functional_tests.sh
 
 ENTRYPOINT ["Rscript", "inst/launcher.R", "-h"]
