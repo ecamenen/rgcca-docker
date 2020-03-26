@@ -159,11 +159,11 @@ testsSep(){
 
 testsSepBad(){
     setUp
-    EXIT=1
+    EXITS=(1 1 102)
     WARN="separator should be comprise between 1 and 3 (1: Tabulation, 2: Semicolon, 3: Comma) [by default: 2], not be equal to"
     WARNS=( "${WARN} 0" "${WARN} 4" "agriculture.tsv has an only-column. Check the separator." )
     TESTS=( '--separator 0' '--separator 4' '--separator 2' )
-    test 1
+    test 2
 }
 
 testsScheme(){
@@ -193,7 +193,7 @@ testsResponse(){
 testsResponseBad(){
     cat data/political_system.tsv | head -n -1 > temp2/response.tsv
     setUp
-    EXITS=(0 1 0)
+    EXITS=(0 101 0)
     WARNS=( "" "test.tsv does not exist" "There is multiple columns in the response file. By default, only the first one is taken in account.")
     TESTS=( '--group temp2/response.tsv' '--group test.tsv' "--group data/agriculture.tsv")
     test 2
@@ -207,13 +207,13 @@ testsConnection(){
 
 testsConnectionBad(){
     setUp
-    EXIT=1
+    EXITS=(106 103 107 130)
     WARNS=( "The connection file should contain only 0 or 1." "The connection file should be a symmetric matrix." "The connection file should not contain only 0." "connection matrix should have the same number of columns (actually 4) than the number of blocks (3)." )
     cat data/connection2.tsv | tr '[1]' '[2]' > temp2/connection.tsv
     cat data/connection2.tsv | head -n -1 > temp2/connection3.tsv
     cat data/connection2.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
     TESTS=( '--superblock -c temp2/connection.tsv' '--superblock -c temp2/connection3.tsv' '--superblock -c temp2/connection4.tsv' "--superblock -c data/connection2.tsv")
-    test 1
+    test 2
 }
 
 testHeader(){
@@ -233,7 +233,7 @@ testExcel(){
 testFileCharacter(){
     paste data/agriculture.tsv data/political_system.tsv > temp/dummyFile.tsv
     setUp
-    EXIT=1
+    EXIT=100
     WARN="dummyFile contains qualitative data. Please, transform them in a disjunctive table."
     INFILE="temp/dummyFile.tsv"
     TESTS=( '' )
@@ -242,7 +242,7 @@ testFileCharacter(){
 
 testTauBad(){
     setUp
-    EXIT=1
+    EXIT=129
     WARN="tau should be comprise between 0 and 1 or should correspond to the character 'optimal' for automatic setting (currently equals to"
     WARNS=("$WARN 2).")
     TESTS=('--tau 2')
@@ -256,7 +256,7 @@ testTau(){
         TESTS[${j}]='--tau '${i}
         let j=${j}+1
     done
-    TESTS[6]="--tau optimal"
+    TESTS[6]="--tau optimal --superblock"
     TESTS[7]="--tau 0,1,0,0.75"
     TESTS[8]="--tau 0.1"
     test
@@ -308,11 +308,11 @@ testNcomp(){
 
 testNcompBad(){
     setUp
-    EXIT=1
-    WARN='ncomp should be higher than or equal to 2.'
-    WARNS=("$WARN" "$WARN" "ncomp should be comprise between 2 and 2, the number of variables of the block (currently equals to 4)" "$WARN" "ncomp should be numeric.")
-    TESTS=( '--ncomp 0' '--ncomp 1' '--ncomp 2,4,2,2' '--ncomp 2,0.2,2,2' '--ncomp kjlj')
-    test 1
+    EXITS=(1 126 1 1)
+    WARN='ncomp should be higher than or equal to 1.'
+    WARNS=("$WARN" "ncomp should be comprise between 1 and 2, the number of variables of the block (currently equals to 4)" "$WARN" "ncomp should be numeric.")
+    TESTS=( '--ncomp 0' '--ncomp 2,4,2,2' '--ncomp 2,0.2,2,2' '--ncomp kjlj')
+    test 2
 }
 
 testNcompXY(){
@@ -323,14 +323,14 @@ testNcompXY(){
 
 testNcompXYBad(){
     setUp
-    EXIT=1
+    EXITS=(1 1 128 128 1)
     WARN="should be higher than or equal to 1."
     WARN0='is currently equals to'
     WARN1='and should be comprise between 1 and'
     WARN2='(the number of component for the selected block).'
     WARNS=("compx $WARN" "compy $WARN" "compx $WARN0 3 $WARN1 2 $WARN2" "compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got "mlkmk"')
     TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' '--compy mlkmk' )
-    test 1
+    test 2
 }
 
 testBlock(){
@@ -343,8 +343,8 @@ testBlock(){
 
 testBlockBad(){
     setUp
-    EXIT=1
-    WARN='block should be lower than 4 (the maximum number of blocks), not be equal to 100.'
+    EXIT=133
+    WARN='100 should be lower than 4 (the maximum number of blocks), not be equal to 100.'
     TESTS=( '--block 100' )
     test
 }
