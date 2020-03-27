@@ -9,15 +9,16 @@ FROM rocker/shiny
 
 MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
-ENV TOOL_VERSION 2.3.0
+ENV TOOL_VERSION 3.0.0
 ENV TOOL_NAME RGCCA
 ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git
-ENV RPKGS MASS lattice roxygen2 testthat RGCCA ggplot2 optparse scales plotly visNetwork igraph ggrepl devtools shiny shinyjs vegan gridExtra nnet Deriv
+ENV RPKGS MASS lattice ggplot2 optparse scales plotly visNetwork igraph ggrepel devtools shiny shinyjs vegan Deriv rlang opensxlsx
+ # gridExtra nnet roxygen2 testthat
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
 LABEL tool="{TOOL_NAME}"
-LABEL docker.version=1.2
+LABEL docker.version=1.1
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
@@ -39,6 +40,10 @@ RUN cp -r $TOOL_NAME/R/ /srv/R && \
 	mv $TOOL_NAME/inst/extdata/ data/ && \
 	cp -r /srv/R /R/ && \
 	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/* $TOOL_NAME
+
+COPY functional_tests.sh /functional_tests.sh
+COPY data/ /data/
+RUN chmod +x /functional_tests.sh
 
 EXPOSE 3838
 
