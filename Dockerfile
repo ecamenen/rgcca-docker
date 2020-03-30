@@ -14,7 +14,7 @@ ENV TOOL_VERSION 3.0.0
 ENV TOOL_NAME RGCCA
 ENV DEBIAN_FRONTEND noninteractive
 ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
-ENV RPKGS ggplot2 optparse scales igraph vegan gridExtra Deriv openxlsx devtools rmarkdown pander ggrepel plotly
+ENV RPKGS ggplot2 optparse scales igraph vegan gridExtra Deriv openxlsx devtools rmarkdown pander ggrepel plotly visNetwork
 ENV _R_CHECK_FORCE_SUGGESTS_ FALSE
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
@@ -34,7 +34,7 @@ RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.co
     R -e 'devtools::document()' && \
     cd / && \
     R -e 'devtools::build_vignettes("RGCCA")' && \
-    R CMD build --no-build-vignettes $TOOL_NAME && \
+    R CMD build $TOOL_NAME && \
     R CMD check *.tar.gz && \
     R -e "install.packages('RGCCA_3.0.tar.gz', repos = NULL, type = 'source')" && \
 	apt-get purge -y git g++ && \
