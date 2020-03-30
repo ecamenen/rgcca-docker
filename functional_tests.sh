@@ -245,7 +245,7 @@ testTauBad(){
     EXIT=129
     WARN="tau should be comprise between 0 and 1 or should correspond to the character 'optimal' for automatic setting (currently equals to"
     WARNS=("$WARN 2).")
-    TESTS=('--tau 2')
+    TESTS=('--penalty 2')
     test 1
 }
 
@@ -253,12 +253,12 @@ testTau(){
     setUp
     j=0
     for i in `seq 0 0.2 1 `; do
-        TESTS[${j}]='--tau '${i}
+        TESTS[${j}]='--penalty '${i}
         let j=${j}+1
     done
-    TESTS[6]="--tau optimal --superblock"
-    TESTS[7]="--tau 0,1,0,0.75"
-    TESTS[8]="--tau 0.1"
+    TESTS[6]="--penalty optimal --superblock"
+    TESTS[7]="--penalty 0,1,0,0.75"
+    TESTS[8]="--penalty 0.1"
     test
 }
 
@@ -328,7 +328,7 @@ testNcompXYBad(){
     WARN0='is currently equals to'
     WARN1='and should be comprise between 1 and'
     WARN2='(the number of component for the selected block).'
-    WARNS=("compx $WARN" "compy $WARN" "compx $WARN0 3 $WARN1 2 $WARN2" "compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got "mlkmk"')
+    WARNS=("compx $WARN" "compy $WARN" "compx $WARN0 3 $WARN1 2 $WARN2" "compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got “mlkmk”')
     TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' '--compy mlkmk' )
     test 2
 }

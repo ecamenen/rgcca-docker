@@ -50,7 +50,6 @@ RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.co
 COPY functional_tests.sh /functional_tests.sh
 COPY data/ /data/
 
-RUN chmod +x /functional_tests.sh && \
-     ./functional_tests.sh
+RUN chmod +x /functional_tests.sh
 
 ENTRYPOINT ["Rscript", "inst/launcher.R", "-h"]
