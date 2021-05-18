@@ -14,13 +14,13 @@ ENV TOOL_VERSION 3.0.0
 ENV TOOL_NAME RGCCA
 ENV DEBIAN_FRONTEND noninteractive
 ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science r-base
-ENV RPKGS ggplot2 optparse scales igraph vegan gridExtra Deriv openxlsx devtools rmarkdown pander ggrepel plotly visNetwork
+ENV RPKGS parallel pbapply grDevices ggplot2 optparse scales igraph gridExtra Deriv openxlsx devtools rmarkdown pander ggrepel plotly visNetwork
 ENV _R_CHECK_FORCE_SUGGESTS_ FALSE
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
 LABEL tool="{TOOL_NAME}"
-LABEL docker.version=1.1
+LABEL docker.version=1.2
 
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
