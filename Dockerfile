@@ -11,35 +11,30 @@ MAINTAINER Etienne CAMENEN ( iconics@icm-institute.org )
 
 ENV TOOL_VERSION 3.0.0
 ENV TOOL_NAME RGCCA
+ENV TOOL_PATH usr/local/lib/R/site-library/RGCCA
 ENV PKGS libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-dev git
-ENV RPKGS MASS lattice ggplot2 optparse scales plotly visNetwork igraph ggrepel devtools shiny shinyjs vegan Deriv rlang opensxlsx
- # gridExtra nnet roxygen2 testthat
+ENV RPKGS parallel pbapply grDevices MASS lattice ggplot2 optparse scales plotly visNetwork igraph ggrepel devtools shiny shinyjs DT Deriv opensxlsx gridExtra methods stats graphics
 
 LABEL Description="Performs multi-variate analysis (PCA, CCA, PLS, RGCCA) and projects the variables and samples into a bi-dimensional space."
 LABEL tool.version="{TOOL_VERSION}"
 LABEL tool="{TOOL_NAME}"
-LABEL docker.version=1.1
+LABEL docker.version=1.2
 LABEL tags="omics,RGCCA,multi-block"
 LABEL EDAM.operation="analysis,correlation,visualisation"
 
 RUN apt-get update -qq && \
     apt-get install -y ${PKGS}
 RUN Rscript -e 'install.packages(commandArgs(TRUE), repos = "http://cran.us.r-project.org")' ${RPKGS} && \
-    R -e 'devtools::install_github(c("ijlyttle/bsplus"))'
-RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.com/rgcca-factory/$TOOL_NAME && \
-    cd $TOOL_NAME && \
-	git checkout $TOOL_VERSION && \
-    cd / && \
-	apt-get purge -y git g++ && \
+    R -e 'devtools::install_github(c("ijlyttle/bsplus"))' && \
+    R -e 'devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")'
+RUN apt-get purge -y git g++ && \
 	apt-get autoremove --purge -y && \
 	apt-get clean
-RUN cp -r $TOOL_NAME/R/ /srv/R && \
-    mkdir inst/ && \
-    mv $TOOL_NAME/inst/launcher.R inst/launcher.R && \
-	mv $TOOL_NAME/inst/shiny /srv/shiny-server/ && \
-	mv $TOOL_NAME/inst/extdata/ data/ && \
-	cp -r /srv/R /R/ && \
-	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/* $TOOL_NAME
+RUN mkdir inst/ && \
+    mv $TOOL_PATH/launcher.R inst/launcher.R && \
+	mv $TOOL_PATH/shiny /srv/shiny-server/ && \
+	mv $TOOL_PATH/extdata/ data/ && \
+	rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/*
 
 COPY functional_tests.sh /functional_tests.sh
 COPY data/ /data/

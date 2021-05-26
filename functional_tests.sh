@@ -207,12 +207,13 @@ testsConnection(){
 
 testsConnectionBad(){
     setUp
-    EXITS=(106 103 107 130)
-    WARNS=( "The connection file should contain only 0 or 1." "The connection file should be a symmetric matrix." "The connection file should not contain only 0." "connection matrix should have the same number of columns (actually 4) than the number of blocks (3)." )
-    cat data/connection2.tsv | tr '[1]' '[2]' > temp2/connection.tsv
-    cat data/connection2.tsv | head -n -1 > temp2/connection3.tsv
-    cat data/connection2.tsv | head -n -1 | cut -f -3  > temp2/connection4.tsv
-    TESTS=( '--superblock -c temp2/connection.tsv' '--superblock -c temp2/connection3.tsv' '--superblock -c temp2/connection4.tsv' "--superblock -c data/connection2.tsv")
+    EXITS=(106 103 107 130 1)
+    WARNS=( "The connection file should contain numbers between 0 and 1." "The connection file should be symmetric." "The connection file should not contain only 0." "connection matrix should have the same number of columns (actually 2) as the number of blocks (3)" "The connection file should have rownames and colnames corresponding to the names of each blocks." )
+    cat data/connection.tsv | tr '[1]' '[2]' > temp2/connection.tsv
+    cat data/connection.tsv | head -n -1 > temp2/connection3.tsv
+    cat data/connection.tsv | tr '[1]' '[0]'  > temp2/connection4.tsv
+    cat data/connection.tsv | head -n -1 | cut -f -3  > temp2/connection5.tsv
+    TESTS=( '--superblock -c temp2/connection.tsv' '--superblock -c temp2/connection3.tsv' '--superblock -c temp2/connection4.tsv' '--superblock -c temp2/connection5.tsv' "--superblock -c data/connection2.tsv")
     test 2
 }
 
@@ -242,11 +243,11 @@ testFileCharacter(){
 
 testTauBad(){
     setUp
-    EXIT=129
+    EXITS=(129 1)
     WARN="tau should be comprise between 0 and 1 or should correspond to the character 'optimal' for automatic setting (currently equals to"
-    WARNS=("$WARN 2).")
-    TESTS=('--penalty 2')
-    test 1
+    WARNS=("$WARN 2)." "tau should be higher than or equal to 0." )
+    TESTS=('--penalty 2' '--penalty=-1')
+    test 2
 }
 
 testTau(){
@@ -309,8 +310,7 @@ testNcomp(){
 testNcompBad(){
     setUp
     EXITS=(1 126 1 1)
-    WARN='ncomp should be higher than or equal to 1.'
-    WARNS=("$WARN" "ncomp should be comprise between 1 and 2, the number of variables of the block (currently equals to 4)" "$WARN" "ncomp should be numeric.")
+    WARNS=("ncomp should be higher than or equal to 1." "ncomp[2] should be comprise between 1 and 2 (that is the number of variables of block 2)." "ncomp should be an integer." "ncomp should be numeric.")
     TESTS=( '--ncomp 0' '--ncomp 2,4,2,2' '--ncomp 2,0.2,2,2' '--ncomp kjlj')
     test 2
 }
@@ -325,10 +325,10 @@ testNcompXYBad(){
     setUp
     EXITS=(1 1 128 128 1)
     WARN="should be higher than or equal to 1."
-    WARN0='is currently equals to'
+    WARN0='equals to'
     WARN1='and should be comprise between 1 and'
-    WARN2='(the number of component for the selected block).'
-    WARNS=("compx $WARN" "compy $WARN" "compx $WARN0 3 $WARN1 2 $WARN2" "compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got “mlkmk”')
+    WARN2='(the number of block component).'
+    WARNS=("compx $WARN" "compy $WARN" "compx $WARN0 3 $WARN1 2 $WARN2" "compy $WARN0 3 $WARN1 2 $WARN2" 'integer expected, got "mlkmk')
     TESTS=( '--compx 0' '--compy 0' '--compx 3' '--compy 3' '--compy mlkmk' )
     test 2
 }
@@ -344,7 +344,7 @@ testBlock(){
 testBlockBad(){
     setUp
     EXIT=133
-    WARN='100 should be lower than 4 (the maximum number of blocks), not be equal to 100.'
+    WARN='block should be lower than 4 (that is the number of blocks).'
     TESTS=( '--block 100' )
     test
 }

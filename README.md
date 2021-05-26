@@ -1,6 +1,6 @@
 # R/SGCCA Docker 
 
-#### Version : 1.1
+#### Version : 1.2
 
 #### Author : Etienne CAMENEN
 
@@ -23,7 +23,7 @@ A user-friendly multi-blocks analysis (Regularized Generalized Canonical Correla
  
 More information about:
 - [RGCCA](https://cran.r-project.org/web/packages/RGCCA/vignettes/vignette_RGCCA.pdf)
-- [input / output formats](https://github.com/rgcca-factory/RGCCA/tree/release/3.0.0#input-files)
+- [input / output formats](https://github.com/rgcca-factory/RGCCA/tree/3.0.0#input-files)
 
 
 ## Usage instruction
@@ -40,7 +40,7 @@ docker run --user shiny --rm -p 3838:3838 rgcca
 ```
 
 The Shiny server can be accessed from [http://localhost:3838/shiny](http://localhost:3838/shiny).
-For direct usage, please read the [Shiny tutorial](https://github.com/BrainAndSpineInstitute/rgcca_Rpackage/blob/master/inst/shiny/tutorialShiny.md).
+For direct usage, please read the [Shiny tutorial](https://github.com/rgcca-factory/RGCCA/blob/3.0.0/inst/shiny/tutorialShiny.md).
 
 ### Run in command-line
 
@@ -56,4 +56,4 @@ Inside the docker, execute:
 Rscript inst/launcher.R --datasets <list_block_files> 
 ```
 
-More information about the command-line parameters [here](https://github.com/rgcca-factory/RGCCA/tree/release/3.0.0#command-line).
+More information about the command-line parameters [here](https://github.com/rgcca-factory/RGCCA/tree/3.0.0#command-line).
