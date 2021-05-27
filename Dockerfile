@@ -1,5 +1,5 @@
 # Author: Etienne CAMENEN
-# Date: 2019
+# Date: 2021
 # Contact: arthur.tenenhaus@l2s.centralesupelec.fr
 # Key-words: data integration, omics, multi-block, regularized generalized, canonical correlation analysis, RGCCA
 # EDAM operation: analysis, correlation, visualisation
@@ -36,7 +36,7 @@ RUN git clone --depth 1 --single-branch --branch $TOOL_VERSION https://github.co
     R -e 'devtools::build_vignettes("RGCCA")' && \
     R CMD build $TOOL_NAME && \
     R CMD check *.tar.gz && \
-    R -e "install.packages('RGCCA_3.0.tar.gz', repos = NULL, type = 'source')" && \
+    R -e "install.packages('"${TOOL_NAME}_${TOOL_VERSION}".tar.gz'"", repos = NULL, type = 'source')" && \
 	apt-get purge -y git g++ && \
 	apt-get autoremove --purge -y && \
 	apt-get clean && \

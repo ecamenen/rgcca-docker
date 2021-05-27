@@ -1,6 +1,6 @@
 # R/SGCCA Docker 
 
-#### Version : 1.1
+#### Version : 1.2
 
 #### Author : Etienne CAMENEN
 

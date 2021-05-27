@@ -1,3 +1,3 @@
 sut:
   build: .
-  command: bash functional_tests.sh
+  command: ./functional_tests.sh
