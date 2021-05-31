@@ -1,3 +1,4 @@
 sut:
   build: .
+  user: root
   command:  ./functional_tests.sh
