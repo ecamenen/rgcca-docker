@@ -1,4 +1,4 @@
 sut:
   build: .
-  entrypoint: /bin/bash
+  entrypoint: bash
   command: ./functional_tests.sh
