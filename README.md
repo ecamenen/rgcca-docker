@@ -36,7 +36,7 @@ docker pull rgcca
 ### Run in Shiny
 
 ```
-docker run --user shiny --rm -p 3838:3838 rgcca
+docker run --rm -p 3838:3838 rgcca
 ```
 
 The Shiny server can be accessed from [http://localhost:3838/shiny](http://localhost:3838/shiny).
