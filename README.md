@@ -1,6 +1,6 @@
 # R/SGCCA Docker 
 
-#### Version : 1.2
+#### Version : 1.3
 
 #### Author : Etienne CAMENEN
 
@@ -11,7 +11,7 @@ omics, RGCCA, multi-block
 analysis, correlation, visualisation
 
 #### Contact
-arthur.tenenhaus@l2s.centralesupelec.fr
+etienne.camenen@gmail.com
 
 #### Short description
 Performs multi-variate analysis (PCA, CCA, PLS, R/SGCCA, etc.) and produces textual and graphical outputs (e.g. variables and individuals plots).
@@ -23,7 +23,7 @@ A user-friendly multi-blocks analysis (Regularized Generalized Canonical Correla
  
 More information about:
 - [RGCCA](https://cran.r-project.org/web/packages/RGCCA/vignettes/vignette_RGCCA.pdf)
-- [input / output formats](https://github.com/rgcca-factory/RGCCA/tree/3.0.0#input-files)
+- [input / output formats](https://github.com/BrainAndSpineInstitute/rgcca_ui#input-files)
 
 
 ## Usage instruction
@@ -47,4 +47,4 @@ Inside the docker, execute:
 Rscript inst/launcher.R --datasets <list_block_files> 
 ```
 
-More information about the command-line parameters [here](https://github.com/rgcca-factory/RGCCA/tree/3.0.0#command-line).
+More information about the command-line parameters [here](https://github.com/BrainAndSpineInstitute/rgcca_ui#command-line).
